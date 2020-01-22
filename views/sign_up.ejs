@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./public/styles.css">
+    <title>Connexion</title>
+</head>
+<body>
+    <h1>Inscription</h1>
+    <div id="error-box">
+        <%= error %>
+    </div>
+    <div id='signup-place'>
+        <form action="/signingup" method="POST">
+            <input type="email" name="email" placeholder="exemple@site.com" id="email" required/><span id="Email-status">☻</span><br/>
+            <input type="text" name="username" placeholder="Nom d'utilisateur" id="username" required/><span id="Username-status">☻</span><br/>
+            <input type="password" name="password" placeholder="Mot de passe" id="password" required/><span id="Password-status">☻</span><br/>
+            
+            <input type="submit" id="submit-btn" disabled/>
+
+        </form>
+        
+    </div>
+
+    <script>
+        var usn = document.getElementById('username'); // username field
+        var pwd = document.getElementById('password'); // password field
+        var sbt = document.getElementById('submit-btn'); // submit button
+        var eml = document.getElementById('email');
+
+        var usnStatus = document.getElementById('Username-status'); // Username Smiley
+        var pwdStatus = document.getElementById('Password-status'); // Password Smiley
+        var emlStatus = document.getElementById('Email-Status'); // Email Smiley
+
+        // Password Verification
+        usn.addEventListener('input',function(event){
+            console.log(event.target.value);
+            if(event.target.value.length < 5){
+                sbt.setAttribute('disabled', true);
+                usnStatus.style.color = 'red';
+            }
+            else if(event.target.value.length > 5){
+                sbt.removeAttribute('disabled');
+                usnStatus.style.color = 'green';
+            }
+        })
+
+        // Username verification
+        pwd.addEventListener('input',function(event){
+            console.log(event.target.value);
+            if(event.target.value.length < 5){
+                sbt.setAttribute('disabled', true);
+                pwdStatus.style.color = 'red';
+            }
+            else if(event.target.value.length > 5){
+                sbt.removeAttribute('disabled');
+                pwdStatus.style.color = 'green';
+            }
+        })
+
+        // TODO : front-end email verification
+
+    </script>
+</body>
+</html>

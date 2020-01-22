@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./public/styles.css">
+    <title>Connexion</title>
+</head>
+<body>
+    <h1>Connexion au site</h1>
+    <div id="error-box">
+        <%= error %>
+    </div>
+    <div id='connexion-place'>
+        <form action="/connect" method="POST">
+            <input type="text" name="username" placeholder="Nom d'utilisateur" required/><br/>
+            <input type="password" name="password" placeholder="Mot de passe" required/><br/>
+            <input type="submit" id="submit-btn"/>
+
+        </form>
+    </div>
+    <div>
+        <h4><a href='/signup'>Create an account :</a></h4>
+    </div>
+</body>
+</html>
