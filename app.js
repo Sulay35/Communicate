@@ -52,7 +52,7 @@ var disconnection = (req, res) =>{
     res.clearCookie('username');
     res.redirect('/')
 }
-app.get('/disconnect', disconnection)
+app.get('/disconnect', disconnection);
 
 
 
@@ -62,5 +62,5 @@ app.use(function(req, res, next){
 })
 
 app.listen(3000, () => {
-    console.log('Server listening on port 3000'.magenta);
+    console.log('Server listening on port %s'.magenta,3000);
 });
