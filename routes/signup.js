@@ -1,8 +1,23 @@
+// Modules :
 const express = require('express');
 const router = express.Router();
 const colors = require('colors');
+const nodemailer = require('nodemailer');
 
-// ◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘\\
+
+//▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\\
+// EMAIL :
+
+var transporter = nodemailer.createTransport({
+    service:'gmail',
+    auth:{
+        user : 'service.nodetest@gmail.com',
+        pass : 'service12345test'
+    }
+})
+
+
+//▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\\
 // Mongoose sgbd
 var mongoose = require('mongoose');
 var options = {server: {socketOptions: {keepAlive:300000, connectTimeoutMS:30000}}, replset:{socketOptions: {keepAlive: 300000, connectTimeoutMS: 30000}}};
@@ -11,14 +26,14 @@ var urlmongo = "mongodb+srv://sulay:12345@cluster0-poyqm.mongodb.net/test?retryW
 // connexion de l'API à la DB
 mongoose.connect(urlmongo, options);
 
+//Base de données
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Erreur lors de la connexion à la DB'));
 db.once('open', function(){
     console.log("connexion à la MDB OK ".green)
 })
+//▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\\
 
-
-// ◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘◘\\
 // User model :
 var Users = require('../models/user_model')
 
@@ -31,31 +46,58 @@ router.post('/signingup', function(req, res){
     var pass = req.body.password;
     var mail = req.body.email;
 
-    //Timer starts:
-    console.time()
+    // Inputs verifications :
+    function inputVerification(){
+        if(name.length > 5 && pass.length > 8 && mail.length > 10) return true; 
+        else return false;
+    }
 
-    // Verification
-    Users.countDocuments({"username":name}, function(err, count){
-        if(count > 0){ // If this username already exists
-            res.render('sign_up.ejs', {error:"L\'identifiant existe déja"}) // return to the sign in page with an error 
-        }else{ // If this username is not taken
-            var user = new Users({email:mail, username:name, password:pass, creation:Date()});
-            user.save(function(err, user){ // save the new user to the database
-                console.log('NEW USER ! : '.yellow + colors.yellow(user));
-                if (err) return console.error(err);
-            })
-            
-            // Timer ends :
-            console.timeEnd()
-            
-            // name cookie
-            res.cookie('connected', true, {maxAge:60*60*1000});
-            res.cookie('username', name);
-            res.redirect('/chat');
-        }
-    })
-    
+    // if all the inputs are correctly filled
+    if(inputVerification()){
+
+        //Timer starts:
+        console.time("creation time");
+        
+        // Verification:
+        Users.countDocuments({"username":name}, function(err, count){
+            if(count > 0){ // If this username already exists
+                res.render('sign_up.ejs', {error:"L\'identifiant existe déja"}) // return to the sign in page with an error 
+            }else{ // If this username is not taken
+                var user = new Users({email:mail, username:name, password:pass, creation:Date()});
+                user.save(function(err, user){ // save the new user to the database
+                    console.log('NEW USER ! : '.yellow + colors.yellow(user));
+                    if (err) return console.error(err);
+                })
+                
+                
+                const mailOptions = {
+                    from:"The Communicate team <service.nodetest@gmail.com>",
+                    to:mail,
+                    subject:`Account created - Communicate`,
+                    html:`<h2>Hello ${name}</h2></br> <p>Your account is created :</br><strong>Username : ${name}</strong> </br><strong>password : ${pass}</strong></br> </p>`,
+                };
+                transporter.sendMail(mailOptions, (err, info) => {
+                    if(err){
+                        console.error(err)
+                    }else{
+                        console.log(info)
+                    }
+                })
+                
+                // Timer ends :
+                console.timeEnd("creation time");
+                
+                // name cookie
+                res.cookie('connected', true, {maxAge:60*60*1000});
+                res.cookie('username', name);
+                res.redirect('/chat');
+            }
+        })
+    }else{
+        res.render('sign_up.ejs', {error:"Remplir vos entrées correctement"})
+    }
+        
 })
-
+    
 // EXPORT:
 module.exports = router;
