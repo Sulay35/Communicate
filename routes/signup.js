@@ -4,10 +4,8 @@ const router = express.Router();
 const colors = require('colors');
 const nodemailer = require('nodemailer');
 
-
 //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\\
 // EMAIL :
-
 var transporter = nodemailer.createTransport({
     service:'gmail',
     auth:{
@@ -16,11 +14,18 @@ var transporter = nodemailer.createTransport({
     }
 })
 
-
 //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\\
 // Mongoose sgbd
 var mongoose = require('mongoose');
-var options = {server: {socketOptions: {keepAlive:300000, connectTimeoutMS:30000}}, replset:{socketOptions: {keepAlive: 300000, connectTimeoutMS: 30000}}};
+
+var options = {
+    keepAlive:300000, 
+    connectTimeoutMS:30000,
+    useNewUrlParser : true,
+    useUnifiedTopology:true,
+    useFindAndModify:false,// for the findOneAndUpdate method
+};
+
 // URL de la base
 var urlmongo = "mongodb+srv://sulay:12345@cluster0-poyqm.mongodb.net/test?retryWrites=true&w=majority"
 // connexion de l'API à la DB
@@ -31,15 +36,19 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Erreur lors de la connexion à la DB'));
 db.once('open', function(){
     console.log("connexion à la MDB OK ".green)
-})
-//▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\\
+});
 
 // User model :
 var Users = require('../models/user_model')
 
+//▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\\
+
+
+// route
 router.get('/signup', function(req, res){
     res.render('sign_up.ejs',{error:""})    
 })
+// POST REQUEST :
 router.post('/signingup', function(req, res){
     // Inputs
     var name = req.body.username;
@@ -48,7 +57,7 @@ router.post('/signingup', function(req, res){
 
     // Inputs verifications :
     function inputVerification(){
-        if(name.length > 5 && pass.length > 8 && mail.length > 10) return true; 
+        if(name.length > 3 && pass.length > 6 && mail.length > 5) return true; 
         else return false;
     }
 
@@ -65,7 +74,8 @@ router.post('/signingup', function(req, res){
             }else{ // If this username is not taken
                 var user = new Users({email:mail, username:name, password:pass, creation:Date()});
                 user.save(function(err, user){ // save the new user to the database
-                    console.log('NEW USER ! : '.yellow + colors.yellow(user));
+                    //console.log('NEW USER ! : '.yellow + colors.yellow(user)); // Verbose version
+                    console.log('NEW USER ! : '.yellow + "\n" + "username : " + colors.yellow(user.username) + "\n" + "password : " + colors.yellow(user.password));
                     if (err) return console.error(err);
                 })
                 
@@ -78,9 +88,16 @@ router.post('/signingup', function(req, res){
                 };
                 transporter.sendMail(mailOptions, (err, info) => {
                     if(err){
-                        console.error(err)
+                        console.error(err);
                     }else{
-                        console.log(info)
+                        //console.log(info); //Mails informations  
+                        // Saving mail data to the "emails" array:                      
+                        Users.findOneAndUpdate(
+                            { _id: user.id }, 
+                            { $push: { emails: info} },
+                            function (error, success) {
+                                 if (error)console.errors(error);
+                             });
                     }
                 })
                 
