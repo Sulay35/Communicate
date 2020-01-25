@@ -3,7 +3,15 @@ const router = express.Router();
 
 // Mongoose sgbd
 var mongoose = require('mongoose');
-var options = {server: {socketOptions: {keepAlive:300000, connectTimeoutMS:30000}}, replset:{socketOptions: {keepAlive: 300000, connectTimeoutMS: 30000}}};
+// var options = {server: {socketOptions: {keepAlive:300000, connectTimeoutMS:30000}}, replset:{socketOptions: {keepAlive: 300000, connectTimeoutMS: 30000}}};
+var options = {
+    keepAlive:300000, 
+    connectTimeoutMS:30000,
+    useNewUrlParser : true,
+    useUnifiedTopology:true,
+
+};
+
 // URL de la base
 var urlmongo = "mongodb+srv://sulay:12345@cluster0-poyqm.mongodb.net/test?retryWrites=true&w=majority"
 // connexion de l'API à la DB
