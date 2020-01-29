@@ -26,8 +26,8 @@ var options = {
     useFindAndModify:false,// for the findOneAndUpdate method
 };
 
-// URL de la base
-var urlmongo = "mongodb+srv://sulay:12345@cluster0-poyqm.mongodb.net/test?retryWrites=true&w=majority"
+// URL de la base : main 
+var urlmongo = "mongodb+srv://sulay:12345@cluster0-poyqm.mongodb.net/main?retryWrites=true&w=majority"
 // connexion de l'API à la DB
 mongoose.connect(urlmongo, options);
 
@@ -35,7 +35,7 @@ mongoose.connect(urlmongo, options);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Erreur lors de la connexion à la DB'));
 db.once('open', function(){
-    console.log("connexion à la MDB OK ".green)
+    console.log("connection à la DB main depuis" + " signup.js".grey + " OK".green)
 });
 
 // User model :
