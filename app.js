@@ -14,6 +14,7 @@ app.use(cookieSession({
     maxAge: 10000 // 24h
 }));
 app.use(cookieParser())
+app.use(express.static('public'))
 
 
 
@@ -28,7 +29,12 @@ app.get('/', function(req, res){
     }else{
         res.redirect('/connection');
     }
-})
+});
+
+// Admin
+const administrator = require('./routes/admin');
+app.use(administrator);
+
 // connection :
 const connection = require('./routes/connection');
 app.use(connection);
@@ -61,6 +67,6 @@ app.use(function(req, res, next){
     res.status(404).send('Erreur 404 - Page Introuvable !<a href="/">Revenir à l\'acceuil </a>');
 })
 
-app.listen(3000, () => {
+app.listen(8080, () => {
     console.log('Server listening on port %s'.magenta,3000);
 });

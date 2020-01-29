@@ -9,25 +9,21 @@ var options = {
     connectTimeoutMS:30000,
     useNewUrlParser : true,
     useUnifiedTopology:true,
-
 };
 
 // URL de la base
-var urlmongo = "mongodb+srv://sulay:12345@cluster0-poyqm.mongodb.net/test?retryWrites=true&w=majority"
+var urlmongo = "mongodb+srv://sulay:12345@cluster0-poyqm.mongodb.net/main?retryWrites=true&w=majority"
 // connexion de l'API à la DB
 mongoose.connect(urlmongo, options);
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Erreur lors de la connexion à la DB'));
 db.once('open', function(){
-    console.log("connexion à la MDB OK ".green)
-})
+    console.log("connection à la DB main depuis" + " connection.js".grey + " OK".green)
+});
 
 // User model :
 var Users = require('../models/user_model');
-
-
-
 
 // Connection
 router.get('/connection', function(req, res){
@@ -43,6 +39,7 @@ router.post('/connect', function(req, res){
                     console.error(err);
                 }
                 else{
+                    console.log(user[0])
                     if(user[0].password == req.body.password){
                         res.cookie('connected', true, {maxAge:60*60*1000});
                         res.cookie('username', name);
