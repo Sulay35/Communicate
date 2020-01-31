@@ -12,5 +12,5 @@ An authentication system working with mongoDB with a future chat using websocket
 * 24/01/20 : merged the _pull-request-2_ to the master branch !
   - **New feature** : nodemailer configured successfully
 * 29/01/20 : merged the _pull-request-4_ to the master branch !:
- - **New feature** : admisistration system added
+  - **New feature** : admisistration system added
  
