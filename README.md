@@ -11,5 +11,6 @@ An authentication system working with mongoDB with a future chat using websocket
   - **New feature** : routing system work perfectly ! separated javascript files in `routes` directory
 * 24/01/20 : merged the _pull-request-2_ to the master branch !
   - **New feature** : nodemailer configured successfully
-
+* 29/01/20 : merged the _pull-request-4_ to the master branch !:
+ - **New feature** : admisistration system added
  
