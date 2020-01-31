@@ -3,8 +3,9 @@ An authentication system working with mongoDB with a future chat using websocket
 
 
 ### Next features to add :
- + Administrator page
+ + Administrator page ✓
  + Email for sign in using node mailer, [https://nodemailer.com/about/] ✓
+ + OAuth system
  
 ### Features and updates :
 * 24/01/20 : merged the _pull-request_-1 to the main branch ! 
